@@ -1,37 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Landing Page</title>
 
-    <!-- ChannelBoost Widget + Tracking Script -->
+    <!-- ChannelBoost Tracking Script -->
     <script>
     (function (w, d, s, u) {
         let j = d.createElement(s);
         j.async = true;
         j.src = "https://assets.channelboost.com/scripts/embeddingwidget.js?uid=" + u;
+
         let f = d.getElementsByTagName(s)[0];
         f.parentNode.insertBefore(j, f);
+
     })(window, document, "script", "a733e81d-99c2-4195-8e2b-631d0159e860");
     </script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
             background-color: #f4f4f4;
+            margin: 0;
+            padding: 40px;
         }
 
         .container {
             text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         button {
@@ -52,16 +48,17 @@
             background-color: #0056b3;
         }
 
-        form {
+        .video-container {
             margin-top: 30px;
+            display: none;
         }
 
-        input {
-            width: 250px;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+        iframe {
+            width: 90%;
+            max-width: 800px;
+            height: 450px;
+            border: none;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -69,45 +66,52 @@
 <body>
 
 <div class="container">
-
     <h2>Welcome</h2>
 
-    <!-- Referral Widget -->
-    <div id="64a2b65e-5cc5-5958-5bf9-019e4eabec70"></div>
-
     <!-- Sign Up -->
-    <button onclick="handleClick('sign_up_button', 'https://my.channelboost.com/register')">
+    <button onclick="playVideo(
+        'sign_up_button',
+        'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    )">
         Sign Up
     </button>
 
     <!-- Login -->
-    <button onclick="handleClick('login_button', 'https://my.channelboost.com/login')">
+    <button onclick="playVideo(
+        'login_button',
+        'https://www.youtube.com/embed/3JZ_D3ELwOQ'
+    )">
         Login
     </button>
 
     <!-- Book a Demo -->
-    <button onclick="handleClick('demo_button', 'https://appventory.com/#:~:text=Your%20Free%20Trial-,Schedule%20a%20Demo,-Intelligent%0ASystem%20Reviews')">
+    <button onclick="playVideo(
+        'demo_button',
+        'https://www.youtube.com/embed/LXb3EKWsInQ'
+    )">
         Book a Demo
     </button>
 
-    <!-- Demo Lead Form -->
-    <form id="leadForm">
-        <h3>Track Referral Lead</h3>
-
-        <input type="text" id="firstName" placeholder="First Name">
-        <input type="text" id="lastName" placeholder="Last Name">
-        <input type="text" id="companyName" placeholder="Company Name">
-        <input type="email" id="email" placeholder="Email Address" required>
-
-        <button type="submit">Submit Lead</button>
-    </form>
+    <!-- Video Player -->
+    <div class="video-container" id="videoContainer">
+        <iframe
+            id="youtubePlayer"
+            src=""
+            allowfullscreen
+            allow="autoplay">
+        </iframe>
+    </div>
 
 </div>
 
 <script>
-function handleClick(eventName, url) {
 
-    // Track button click
+/**
+ * Play YouTube video when button clicked
+ */
+function playVideo(eventName, videoUrl) {
+
+    // Track event
     if (typeof trackify !== "undefined") {
         trackify.trackEvent(eventName);
         console.log("Tracked:", eventName);
@@ -115,34 +119,38 @@ function handleClick(eventName, url) {
         console.warn("trackify not loaded");
     }
 
-    // Delay redirect slightly so tracking can complete
-    setTimeout(() => {
-        window.location.href = url;
-    }, 250);
+    // Show video container
+    const container = document.getElementById("videoContainer");
+    const player = document.getElementById("youtubePlayer");
+
+    // Autoplay enabled
+    player.src = videoUrl + "?autoplay=1";
+
+    container.style.display = "block";
 }
 
 
-// Lead Tracking Form
-document.getElementById("leadForm").addEventListener("submit", function(e) {
-    e.preventDefault();
+/**
+ * Track referral lead submissions
+ */
+function trackReferralLead(formData) {
 
-    const formData = {
-        email: document.getElementById("email").value,
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("lastName").value,
-        companyName: document.getElementById("companyName").value
-    };
-
-    // Track referral lead
     if (typeof trackify !== "undefined") {
-        trackify.trackLead(formData);
-        console.log("Lead tracked:", formData);
-        alert("Lead tracked successfully!");
+
+        trackify.trackLead({
+            email: formData.email,
+            firstName: formData.firstName || "",
+            lastName: formData.lastName || "",
+            companyName: formData.companyName || ""
+        });
+
+        console.log("Referral lead tracked");
+
     } else {
         console.warn("trackify not loaded");
-        alert("Tracking script not loaded.");
     }
-});
+}
+
 </script>
 
 </body>
